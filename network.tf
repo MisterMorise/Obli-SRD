@@ -5,7 +5,7 @@ provider "aws" {
 resource "aws_vpc" "vpc-srd" {
   cidr_block = "192.168.0.0/16"
 
-    tags = {
+  tags = {
     Name = "VPC-SRD"
   }
 }
@@ -13,81 +13,85 @@ resource "aws_vpc" "vpc-srd" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc-srd.id
 
-    tags = {
-        Name = "IGW-SRD"
-    }
+  tags = {
+    Name = "IGW-SRD"
+  }
 }
 
 resource "aws_subnet" "subnet_publica_1" {
   vpc_id                  = aws_vpc.vpc-srd.id
   cidr_block              = "192.168.1.0/24"
   map_public_ip_on_launch = true
+  availability_zone       = "us-east-1a"
 
-    tags = {
-        Name = "Subnet-Publica-1"
-    }
+  tags = {
+    Name = "Subnet-Publica-1"
+  }
 }
 
 resource "aws_subnet" "subnet_publica_2" {
   vpc_id                  = aws_vpc.vpc-srd.id
   cidr_block              = "192.168.2.0/24"
   map_public_ip_on_launch = true
+  availability_zone       = "us-east-1b"
 
-    tags = {
-        Name = "Subnet-Publica-2"
-    }
+  tags = {
+    Name = "Subnet-Publica-2"
+  }
 }
 
 resource "aws_subnet" "subnet_privada_1" {
-  vpc_id     = aws_vpc.vpc-srd.id
-  cidr_block = "192.168.3.0/24"
+  vpc_id            = aws_vpc.vpc-srd.id
+  cidr_block        = "192.168.3.0/24"
+  availability_zone = "us-east-1a"
 
-    tags = {
-        Name = "Subnet-Privada-1"
-    }
+  tags = {
+    Name = "Subnet-Privada-1"
+  }
 }
 
 resource "aws_subnet" "subnet_privada_2" {
-  vpc_id     = aws_vpc.vpc-srd.id
-  cidr_block = "192.168.4.0/24"
+  vpc_id            = aws_vpc.vpc-srd.id
+  cidr_block        = "192.168.4.0/24"
+  availability_zone = "us-east-1b"
 
-    tags = {
-        Name = "Subnet-Privada-2"
-    }
+  tags = {
+    Name = "Subnet-Privada-2"
+  }
 }
 
 resource "aws_eip" "eip_nat_gw_1" {
   vpc = true
 
-    tags = {
-        Name = "EIP-NAT-GW-1"
-    }
+  tags = {
+    Name = "EIP-NAT-GW-1"
+  }
 }
 
 resource "aws_nat_gateway" "nat_gw_1" {
   subnet_id     = aws_subnet.subnet_publica_1.id
   allocation_id = aws_eip.eip_nat_gw_1.id
 
-    tags = {
-        Name = "NAT-GW-1"
-    }
+  tags = {
+    Name = "NAT-GW-1"
+  }
 }
 
 resource "aws_eip" "eip_nat_gw_2" {
   vpc = true
 
-    tags = {
-        Name = "EIP-NAT-GW-2"
-    }
+  tags = {
+    Name = "EIP-NAT-GW-2"
+  }
 }
 
 resource "aws_nat_gateway" "nat_gw_2" {
   subnet_id     = aws_subnet.subnet_publica_2.id
   allocation_id = aws_eip.eip_nat_gw_2.id
-    
-        tags = {
-            Name = "NAT-GW-2"
-        }
+
+  tags = {
+    Name = "NAT-GW-2"
+  }
 }
 
 resource "aws_route_table" "publica" {
@@ -98,14 +102,14 @@ resource "aws_route_table" "publica" {
     gateway_id = aws_internet_gateway.igw.id
   }
 
-#   route {
-#     cidr_block = "192.168.0.0/16"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
+  #   route {
+  #     cidr_block = "192.168.0.0/16"
+  #     gateway_id = aws_internet_gateway.igw.id
+  #   }
 
-    tags = {
-        Name = "Tabla-de-rutas-Publica"
-    }
+  tags = {
+    Name = "Tabla-de-rutas-Publica"
+  }
 }
 
 resource "aws_route_table_association" "publica_1" {
@@ -126,14 +130,14 @@ resource "aws_route_table" "privada_1" {
     nat_gateway_id = aws_nat_gateway.nat_gw_1.id
   }
 
-#   route {
-#     cidr_block = "192.168.0.0/16"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
-    
-        tags = {
-            Name = "Tabla-de-rutas-Privada-1"
-        }
+  #   route {
+  #     cidr_block = "192.168.0.0/16"
+  #     gateway_id = aws_internet_gateway.igw.id
+  #   }
+
+  tags = {
+    Name = "Tabla-de-rutas-Privada-1"
+  }
 }
 
 resource "aws_route_table_association" "as_privada_1" {
@@ -149,14 +153,14 @@ resource "aws_route_table" "privada_2" {
     nat_gateway_id = aws_nat_gateway.nat_gw_2.id
   }
 
-#   route {
-#     cidr_block = "192.168.0.0/16"
-#     gateway_id = aws_internet_gateway.igw.id
-#   }
-        
-            tags = {
-                Name = "Tabla-de-rutas-Privada-2"
-            }
+  #   route {
+  #     cidr_block = "192.168.0.0/16"
+  #     gateway_id = aws_internet_gateway.igw.id
+  #   }
+
+  tags = {
+    Name = "Tabla-de-rutas-Privada-2"
+  }
 }
 
 resource "aws_route_table_association" "as_privada_2" {
@@ -194,6 +198,15 @@ resource "aws_network_acl" "n_acl" {
     from_port  = 443
     to_port    = 443
   }
+  //El protocolo 1 es ICMP
+  ingress {
+    protocol   = "1"
+    rule_no    = 400
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 8 // ICMP type for Echo request (ping)
+    to_port    = 0 // ICMP code for Echo request (ping)
+  }
 
   egress {
     protocol   = "tcp"
@@ -221,15 +234,24 @@ resource "aws_network_acl" "n_acl" {
     from_port  = 443
     to_port    = 443
   }
-  
-      tags = {
-          Name = "N-ACL"
-      }
+  //El protocolo 1 es ICMP
+  egress {
+    protocol   = "1"
+    rule_no    = 400
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0 // ICMP type for Echo reply
+    to_port    = 0 // ICMP code for Echo reply
+  }
+
+  tags = {
+    Name = "N-ACL"
+  }
 }
 
 resource "aws_security_group" "sg_alb" {
   name        = "sg_alb"
-  description = "Permite tráfico HTTP y HTTPS en el ALB"
+  description = "Permite trafico HTTP y HTTPS en el ALB"
   vpc_id      = aws_vpc.vpc-srd.id
 
   ingress {
@@ -262,7 +284,7 @@ resource "aws_security_group" "sg_alb" {
 
 resource "aws_security_group" "sg_bastion" {
   name        = "sg_bastion"
-  description = "Permite solamente tráfico SSH en el bastión"
+  description = "Se permite SSH, HTTP y HTTPS en el bastion"
   vpc_id      = aws_vpc.vpc-srd.id
 
   ingress {
@@ -270,6 +292,30 @@ resource "aws_security_group" "sg_bastion" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ICMP"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -287,7 +333,7 @@ resource "aws_security_group" "sg_bastion" {
 
 resource "aws_security_group" "sg_web" {
   name        = "sg_web"
-  description = "Permite tráfico HTTP, HTTPS. SSH solo desde bastiones"
+  description = "Permite trafico HTTP, HTTPS. SSH solo desde bastiones"
   vpc_id      = aws_vpc.vpc-srd.id
 
   ingress {
@@ -307,10 +353,18 @@ resource "aws_security_group" "sg_web" {
   }
 
   ingress {
-    description = "SSH desde bastiones"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description     = "SSH desde bastiones"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.sg_bastion.id]
+  }
+
+  ingress {
+    description     = "ICMP"
+    from_port       = -1
+    to_port         = -1
+    protocol        = "icmp"
     security_groups = [aws_security_group.sg_bastion.id]
   }
 
