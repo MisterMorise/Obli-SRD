@@ -48,7 +48,7 @@ resource "aws_instance" "web_server_2" {
 }
 
 resource "aws_key_pair" "key_pair" {
-  key_name   = "key-obli-srd"
+  key_name   = "id_rsa.pub"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzMeLrNAK40kahNSY5MVQ3dIKeHqWXD/uXrkL6dUmW/R7q4FUfgpUESAfPLQVbw+UVtvJcNjVe6OTZk3U4S7L0J0vRw6U+LClYJmqOV62HePDiD2/Xvs6AAhf4Kh+E3ExjBI8afRQQFnGXjeV25OULeRk4vcc2PBgPMJj3yw88Ld6qWpca2OCQ0bSKFv5tYm4/ZnHC9KcFTPjCpErxDTa2S6TvtZ0jmhthBdw9TEJuTA3YxLOXBTUUPJ9nm9YDXycAMzTnhCtgsTzXLYAN902xmT2aZndGKpKAdduVaxpULOGMGzSuZ930prohrA21lz5fTYrgq4iSHBs1OtS9DYZ4Q1xwo39bHbbeqnscEV0Q8YGOt4S+sH8wUbWR5uHdgzYHqw8uVqtwnzo03jpk7O8AFMuNnL54CQZUEurhpE6il8PbGlvFCF+E9N+uQUlRaBTUCMGccbm9Vid6VizJZNCmQvBPoS4pRlvW6NavA/OHfblBi2BsC7VP6RclwQT7Ikc= srd@obli-srd"
 }
 
